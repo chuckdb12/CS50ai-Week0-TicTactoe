@@ -29,11 +29,11 @@ def player(board):
     
     numX = 0
     numO = 0
-    for i in board:
-        for j in board[i]:
-            if board[i,j] == X:
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == X:
                 numX += 1
-            elif board[i,j] == O:
+            elif board[i][j] == O:
                 numO += 1
     
     #If there is more Xs than Os, it's O's turn
@@ -53,10 +53,10 @@ def actions(board):
     actions = set()
     
     #iterate on each position in the board to check if it's empty
-    for i in board:
-        for j in board:
-            if board[i,j] == EMPTY:
-                actions.add(board[i,j])
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == EMPTY:
+                actions.add((i,j))
 
     ##If no actions are possible, return None
     if not actions:
@@ -69,6 +69,8 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
+    if action == 0:
+        return
     #If the position is not Empty, raise exception
     if board[action[0]][action[1]] != EMPTY:
         raise IndexError("Action not valid")
@@ -136,10 +138,61 @@ def utility(board):
     #If nobody won, it is a tie
     else: 
         return 0
-
+    
+def minimax_(board):
+    """
+    recursive version of minimax function, return v instead of the tuple
+    """
+        #First check if the game is over, if so, we return the winner
+    if terminal(board):
+        return utility(board)
+    #The X player is the max player
+    if player(board) == X:
+        #We assign negative infinite value to v, which we want to maximize (1 if possible, 0 otherwise)
+        v = -math.inf
+        #We iterate on each action possible
+        for action in actions(board):
+            v = max(v,minimax_(result(board,action)))
+        return v
+    #The O player is the min player
+    else:
+        #We assign infinite value to v, which we want to minimize (-1 if possible, 0 otherwise)
+        v = math.inf
+        #We iterate on each action possible
+        for action in actions(board):
+            v = min(v,minimax_(result(board,action)))
+        return v
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    raise NotImplementedError
+    move = None
+    if(all(all(element == EMPTY for element in row) for row in board)):
+        return (1,1)
+    #First check if the game is over, if so, we return the winner
+    if terminal(board):
+        return utility(board)
+    #The X player is the max player
+    if player(board) == X:
+        #We assign negative infinite value to v, which we want to maximize (1 if possible, 0 otherwise)
+        v = -math.inf
+        #We iterate on each action possible
+        for action in actions(board):
+            newV = max(v,minimax_(result(board,action)))
+            if newV > v:
+                v = newV
+                move = action
+        return move
+    #The O player is the min player
+    else:
+        #We assign infinite value to v, which we want to minimize (-1 if possible, 0 otherwise)
+        v = math.inf
+        #We iterate on each action possible
+        for action in actions(board):
+            newV = min(v,minimax_(result(board,action)))
+            if newV < v:
+                v = newV
+                move = action
+        return move
+    
