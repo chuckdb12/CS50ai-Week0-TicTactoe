@@ -89,7 +89,7 @@ def winner(board):
 
     #Let's first see if we have a win state in a row
     for row in board:
-        if (row[0] == row[1] == row[2]) and board[0][col] != EMPTY:
+        if (row[0] == row[1] == row[2]) and row[0] != EMPTY:
             return row[0]
         
     #Then we check for a column win
@@ -98,20 +98,44 @@ def winner(board):
             return board[0][col]
 
     #Finaly check for diagonal wins
-    if (board[0][0] == board[1][1] == board[2][2]) and 
+    if (board[0][0] == board[1][1] == board[2][2]) and board[0][0] != EMPTY:
+        return board[0][0]
+    if (board[0][2] == board[1][1] == board[2][0]) and board[2][0] != EMPTY:
+        return board[0][2]
+    
+    #If the board in not in a win state, we return None
+    return None
+    
 
 def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    raise NotImplementedError
+    #First check if there is a winner
+    if winner(board) is not None:
+        return True
+    
+    #Check if the board is full
+    if(all(all(element != EMPTY for element in row) for row in board)):
+        return True
+    
+    #Otherwise, return false
+    return False
+
 
 
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    raise NotImplementedError
+    #Check who won, or if there is a tie
+    if winner(board) == X:
+        return 1
+    elif winner(board) == O:
+        return -1
+    #If nobody won, it is a tie
+    else: 
+        return 0
 
 
 def minimax(board):
