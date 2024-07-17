@@ -72,7 +72,7 @@ def result(board, action):
     if action == 0:
         return
     #If the position is not Empty, raise exception
-    if board[action[0]][action[1]] != EMPTY:
+    if board[action[0]][action[1]] != EMPTY or action[0] < 0 or action[1] < 0:
         raise IndexError("Action not valid")
 
     #Make a deep copy of the board
@@ -172,7 +172,7 @@ def minimax(board):
         return (1,1)
     #First check if the game is over, if so, we return the winner
     if terminal(board):
-        return utility(board)
+        return None
     #The X player is the max player
     if player(board) == X:
         #We assign negative infinite value to v, which we want to maximize (1 if possible, 0 otherwise)
